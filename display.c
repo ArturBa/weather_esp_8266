@@ -28,11 +28,12 @@ void __print_temp(const float temp){
   char temp_text[5];
   sprintf(temp_text, "%3.1f'C", temp);
   ssd1306_draw_string(&device, frame_buf, 
-      font_builtin_fonts[FONT], 60, 10, temp_text, OLED_COLOR_WHITE, OLED_COLOR_BLACK);
+      font_builtin_fonts[FONT], 60, 10, temp_text, 
+      OLED_COLOR_WHITE, OLED_COLOR_BLACK);
 }
 
 void __print_weather_icon(const weather_condition _cond){
-  int i, j;
+  volatile int i, j;
   for(i=0; i!=32; i++){
     for(j=0; j!=32; j++){
       if(weather_icon[_cond][j+32*i])
@@ -49,32 +50,26 @@ void __print_weather(const weather* _weather){
     printf("[Ssd1306][load_frame_buffer] Error");
 }
 
-void update_weather_info(void* pvParameters){
-  do{
-    weather *weather_data=get_weather();
-    if(weather_data == NULL){
-      printf("[Ssd1306][update_weather_info] Get weather data failure\n");
-      for(int countdown = 20; countdown >= 0; countdown--) {
-          vTaskDelay(1000 / portTICK_PERIOD_MS);
-      }
-      continue;
-    }
-    __print_weather(weather_data);
+void update_weather_info(TimerHandle_t xTimer){
+  printf("In update_weather_info\n");
+  weather *weather_data=get_weather();
+  if(weather_data == NULL){
+    printf("[Ssd1306][update_weather_info] Get weather data failure\n");
+    return;
+  }
+  __print_weather(weather_data);
 
-    free(weather_data);
-    for(int countdown = 20; countdown >= 0; countdown--) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-  }while(1);
+  free(weather_data);
+  return;
 }
 
 
-void print_text(char* print){
+void print_text(char* _text){
   ssd1306_set_whole_display_lighting(&device, false);
-  while(1){
-    ssd1306_draw_string(&device, frame_buf, 
-        font_builtin_fonts[FONT], 20, 20, print, OLED_COLOR_WHITE, OLED_COLOR_BLACK);
-    if(ssd1306_load_frame_buffer(&device, frame_buf))
-      printf("[Ssd1306][load_frame_buffer] Error");
-  }
+
+  ssd1306_draw_string(&device, frame_buf, 
+      font_builtin_fonts[FONT], 20, 20, _text, 
+      OLED_COLOR_WHITE, OLED_COLOR_BLACK);
+  if(ssd1306_load_frame_buffer(&device, frame_buf))
+    printf("[Ssd1306][load_frame_buffer] Error");
 }

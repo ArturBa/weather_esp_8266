@@ -12,15 +12,13 @@
 #include "lwip/dns.h"
 
 void config_wifi(void){
-    struct sdk_station_config config = {
-        .ssid = WIFI_SSID,
-        .password = WIFI_PASS,
-    };
+  struct sdk_station_config config = {
+    .ssid = WIFI_SSID,
+    .password = WIFI_PASS,
+  };
 
-
-    /* required to call wifi_set_opmode before station_set_config */
-    sdk_wifi_set_opmode(STATION_MODE);
-    sdk_wifi_station_set_config(&config);
+  sdk_wifi_set_opmode(STATION_MODE);
+  sdk_wifi_station_set_config(&config);
 }
 
 int __get_socket(const char* server, const char* port){
