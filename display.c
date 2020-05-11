@@ -50,7 +50,7 @@ void __print_weather(const weather* _weather){
     printf("[Ssd1306][load_frame_buffer] Error");
 }
 
-<<<<<<< HEAD
+
 void update_weather_info(TimerHandle_t xTimer){
   printf("In update_weather_info\n");
   weather *weather_data=get_weather();
